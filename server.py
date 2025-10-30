@@ -9,7 +9,7 @@ DOWNLOAD_FOLDER = "./downloads"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 
-def schedule_file_deletion(filepath, delay=300):
+def schedule_file_deletion(filepath, delay=60):
     def delete_file():
         time.sleep(delay)
         if os.path.exists(filepath):
@@ -62,7 +62,7 @@ def download():
             return jsonify({"success": False, "error": "File not found."})
 
         filepath = os.path.join(DOWNLOAD_FOLDER, filename)
-        schedule_file_deletion(filepath, delay=300)
+        schedule_file_deletion(filepath, delay=60)
 
         return jsonify(
             {
@@ -92,3 +92,4 @@ def home():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
