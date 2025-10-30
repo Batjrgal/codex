@@ -7,6 +7,14 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// Serve downloaded files
+app.use("/downloads", express.static(path.resolve("./downloads")));
+
+// Basic root route to avoid 404 at /
+app.get("/", (req, res) => {
+	res.send("Backend is running. POST /download to start a download.");
+});
+
 app.post("/download", (req, res) => {
   const { url } = req.body;
   if (!url) return res.json({ success: false, error: "No URL provided" });
@@ -22,9 +30,9 @@ app.post("/download", (req, res) => {
     res.json({
       success: true,
       title,
-      file: `http://localhost:5000/downloads/${title}.mp3`
+      file: `https://laravel1-production-5b85.up.railway.app/downloads/${title}.mp3`
     });
   });
 });
 
-app.listen(5000, () => console.log("🚀 Backend running on http://localhost:5000"));
+app.listen(process.env.PORT || 8080, () => console.log("🚀 Backend running on https://laravel1-production-5b85.up.railway.app:8080"));
