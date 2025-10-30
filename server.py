@@ -30,17 +30,17 @@ def download():
                 title = line.split('"')[1]
                 break
 
-        # MP3 файл хайх
+        # татсан файлыг олох
         filename = None
         for file in os.listdir(DOWNLOAD_FOLDER):
-            if title and title.lower() in file.lower() and file.endswith(".mp3"):
+            if title and title.lower().replace(" ", "_") in file.lower().replace(" ", "_") and file.endswith(".mp3"):
                 filename = file
                 break
 
         if not filename:
             return jsonify({"success": True, "title": title, "message": "Downloaded, but file not found."})
 
-        file_url = f"https://{os.environ.get('RAILWAY_STATIC_URL', 'https://laravel1-production-5b85.up.railway.app')}/files/{filename}"
+        file_url = f"https://{os.environ.get('RAILWAY_STATIC_URL', 'laravel1-production-5b85.up.railway.app')}/files/{filename}"
 
         return jsonify({
             "success": True,
@@ -55,13 +55,12 @@ def download():
 
 @app.route("/files/<path:filename>")
 def serve_file(filename):
-    """Return downloaded mp3 files"""
     return send_from_directory(DOWNLOAD_FOLDER, filename)
 
 
 @app.route("/")
 def home():
-    return "✅ spotDL backend with download links is running!"
+    return "✅ spotDL backend with working MP3 download links!"
 
 
 if __name__ == "__main__":
