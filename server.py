@@ -80,10 +80,11 @@ def serve_file(filename):
 
 @app.route("/")
 def home():
-    return "✅ spotDL backend with 1-min auto-delete is running!"
+    return "✅ spotDL backend with 1-min auto-delete is running! "
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
 
 
 
