@@ -71,7 +71,13 @@ def download():
         })
 
     except subprocess.CalledProcessError as e:
-        return jsonify({"success": False, "error": e.stderr})
+    print("❌ SPOTDL ERROR:")
+    print(e.stderr)
+    return jsonify({
+        "success": False,
+        "error": e.stderr or "spotDL failed (check FFmpeg or YouTube match)."
+    })
+
 
 
 @app.route("/files/<path:filename>")
@@ -84,5 +90,6 @@ def home():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
 
 
