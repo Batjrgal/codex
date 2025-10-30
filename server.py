@@ -1,9 +1,12 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import subprocess
+import subprocess, os
 
 app = Flask(__name__)
 CORS(app)
+
+DOWNLOAD_FOLDER = "./downloads"
+os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 @app.route("/download", methods=["POST"])
 def download():
@@ -13,34 +16,53 @@ def download():
         return jsonify({"success": False, "error": "No URL provided"}), 400
 
     try:
-        # stdout уншдаг хувилбар
         result = subprocess.run(
-            ["spotdl", url, "--output", "./downloads"],
+            ["spotdl", url, "--output", DOWNLOAD_FOLDER],
             capture_output=True,
             text=True,
             check=True
         )
 
         output = result.stdout
-        # "Downloaded ..." мөрөөс дууны нэр гаргах
         title = None
         for line in output.splitlines():
             if line.startswith("Downloaded"):
-                title = line.split('"')[1]  # "HUNTR/X - Golden" гэх мэт
+                title = line.split('"')[1]
                 break
+
+        # MP3 файл хайх
+        filename = None
+        for file in os.listdir(DOWNLOAD_FOLDER):
+            if title and title.lower() in file.lower() and file.endswith(".mp3"):
+                filename = file
+                break
+
+        if not filename:
+            return jsonify({"success": True, "title": title, "message": "Downloaded, but file not found."})
+
+        file_url = f"https://{os.environ.get('RAILWAY_STATIC_URL', 'https://laravel1-production-5b85.up.railway.app')}/files/{filename}"
 
         return jsonify({
             "success": True,
-            "title": title if title else "Unknown Track",
+            "title": title,
+            "file": file_url,
             "message": "Downloaded successfully!"
         })
 
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr})
 
+
+@app.route("/files/<path:filename>")
+def serve_file(filename):
+    """Return downloaded mp3 files"""
+    return send_from_directory(DOWNLOAD_FOLDER, filename)
+
+
 @app.route("/")
 def home():
-    return "✅ spotDL backend running with FFmpeg + CORS!"
+    return "✅ spotDL backend with download links is running!"
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
