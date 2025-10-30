@@ -42,7 +42,7 @@ def download():
                 "--format",
                 "mp3",
                 "--bitrate",
-                "320k",
+                "192k",
             ],
             capture_output=True,
             text=True,
@@ -83,7 +83,7 @@ def download():
 
         # Татах линк үүсгэх
         domain = "https://laravel1-production-5b85.up.railway.app"
-        file_url = f"{domain}/files/{filename}"
+        file_url = f"{filename}"
 
         return jsonify(
             {
@@ -110,3 +110,4 @@ def home():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
