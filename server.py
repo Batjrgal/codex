@@ -42,7 +42,7 @@ def download():
                 "--format",
                 "mp3",
                 "--bitrate",
-                "192k",
+                "320k",
             ],
             capture_output=True,
             text=True,
@@ -110,4 +110,5 @@ def home():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
 
