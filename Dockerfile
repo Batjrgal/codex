@@ -1,16 +1,16 @@
 FROM python:3.10-slim
 
-# ажлын хавтас
 WORKDIR /app
 
-# файлуудыг хуулах
+# ffmpeg суулгах
+RUN apt-get update && apt-get install -y ffmpeg
+
+# Python хамаарлууд суулгах
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# port нээх
 EXPOSE 8080
 
-# сервер ажиллуулах
 CMD ["python", "server.py"]
