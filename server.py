@@ -30,7 +30,7 @@ def download():
 
     try:
         result = subprocess.run(
-            ["spotdl", url, "--output", DOWNLOAD_FOLDER],
+            ["spotdl", url, "--output", DOWNLOAD_FOLDER, "--format", "mp3", "--bitrate", "320k"],
             capture_output=True,
             text=True,
             check=True
@@ -84,3 +84,4 @@ def home():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
