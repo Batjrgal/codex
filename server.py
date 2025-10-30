@@ -9,10 +9,7 @@ DOWNLOAD_FOLDER = "./downloads"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 
-# ==== Тусгай функц: Файлыг устгах ====
 def schedule_file_deletion(filepath, delay=300):
-    """delay = секундээр (5 минут = 300 секунд)"""
-
     def delete_file():
         time.sleep(delay)
         if os.path.exists(filepath):
@@ -29,22 +26,17 @@ def schedule_file_deletion(filepath, delay=300):
 def download():
     data = request.get_json()
     url = data.get("url")
-    url = url.replace("https://open.spotify.com/intl-mn/", "https://open.spotify.com/").split("?")[0]
     if not url:
         return jsonify({"success": False, "error": "No URL provided"}), 400
 
+    # Spotify бүсийн линк цэвэрлэх
+    url = url.replace(
+        "https://open.spotify.com/intl-mn/", "https://open.spotify.com/"
+    ).split("?")[0]
+
     try:
         result = subprocess.run(
-            [
-                "spotdl",
-                url,
-                "--output",
-                DOWNLOAD_FOLDER,
-                "--format",
-                "mp3",
-                "--bitrate",
-                "320k",
-            ],
+            ["spotdl", url, "--output", DOWNLOAD_FOLDER, "--format", "mp3"],
             capture_output=True,
             text=True,
             check=True,
@@ -54,11 +46,9 @@ def download():
         print("=== SPOTDL OUTPUT ===")
         print(output)
 
-        # "Downloaded" мөрөөс нэр гаргах
         title_match = re.search(r'Downloaded "(.*?)"', output)
         title = title_match.group(1) if title_match else "Unknown Track"
 
-        # MP3 файл олох (хамгийн сүүлд үүссэн)
         filename = None
         for file in os.listdir(DOWNLOAD_FOLDER):
             if file.endswith(".mp3"):
@@ -69,22 +59,10 @@ def download():
                     filename = file
 
         if not filename:
-            return jsonify(
-                {
-                    "success": True,
-                    "title": title,
-                    "file": None,
-                    "message": "File not found.",
-                }
-            )
+            return jsonify({"success": False, "error": "File not found."})
 
-        # Файлын бүрэн зам, устгал төлөвлөх
         filepath = os.path.join(DOWNLOAD_FOLDER, filename)
-        schedule_file_deletion(filepath, delay=300)  # 5 минут = 300 секунд
-
-        # Татах линк үүсгэх
-        domain = "https://laravel1-production-5b85.up.railway.app"
-        file_url = f"{filename}"
+        schedule_file_deletion(filepath, delay=300)
 
         return jsonify(
             {
@@ -99,25 +77,18 @@ def download():
         print("❌ SPOTDL ERROR OUTPUT ===")
         print(e.stderr)
         print("===========================")
-        return jsonify(
-            {
-                "success": False,
-                "error": e.stderr
-                or "spotDL failed (check FFmpeg or YouTube availability).",
-            }
-        )
+        return jsonify({"success": False, "error": e.stderr})
 
 
 @app.route("/files/<path:filename>")
 def serve_file(filename):
-    return send_from_directory(DOWNLOAD_FOLDER, filename)
+    return send_from_directory(DOWNLOAD_FOLDER, filename, as_attachment=True)
 
 
 @app.route("/")
 def home():
-    return "✅ spotDL backend with 5-min auto-delete is running!"
+    return "✅ spotDL backend running"
 
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
-
