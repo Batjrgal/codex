@@ -30,7 +30,7 @@ def download():
 
     try:
         result = subprocess.run(
-            ["spotdl", url, "--output", DOWNLOAD_FOLDER, "--format", "mp3", "--bitrate", "128k"],
+            ["spotdl", url, "--output", DOWNLOAD_FOLDER, "--format", "mp3", "--bitrate", "192k"],
             capture_output=True,
             text=True,
             check=True
@@ -67,7 +67,7 @@ def download():
             "success": True,
             "title": title,
             "file": file_url,
-            "message": "Downloaded successfully! (auto-deletes in 5 min)"
+            "message": "Downloaded successfully! (auto-deletes in 1 min)"
         })
 
     except subprocess.CalledProcessError as e:
@@ -80,10 +80,11 @@ def serve_file(filename):
 
 @app.route("/")
 def home():
-    return "✅ spotDL backend with 5-min auto-delete is running!"
+    return "✅ spotDL backend with 1-min auto-delete is running!"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
 
 
 
