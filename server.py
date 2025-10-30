@@ -70,14 +70,14 @@ def download():
             "message": "Downloaded successfully! (auto-deletes in 5 min)"
         })
 
-    except subprocess.CalledProcessError as e:
-        print("❌ SPOTDL ERROR OUTPUT ===")
-        print(e.stderr)
-        print("===========================")
-        return jsonify({
-            "success": False,
-            "error": e.stderr or "spotDL failed (check FFmpeg or YouTube availability)."
-        })
+except subprocess.CalledProcessError as e:
+    print("❌ SPOTDL ERROR OUTPUT ===")
+    print(e.stderr)
+    print("===========================")
+    return jsonify({
+        "success": False,
+        "error": e.stderr or "spotDL failed (check FFmpeg or YouTube availability)."
+    })
 
 @app.route("/files/<path:filename>")
 def serve_file(filename):
@@ -89,5 +89,6 @@ def home():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
 
 
