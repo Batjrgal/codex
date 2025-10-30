@@ -9,7 +9,7 @@ DOWNLOAD_FOLDER = "./downloads"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 # ==== Тусгай функц: Файлыг устгах ====
-def schedule_file_deletion(filepath, delay=60):
+def schedule_file_deletion(filepath, delay=300):
     """delay = секундээр (5 минут = 300 секунд)"""
     def delete_file():
         time.sleep(delay)
@@ -57,17 +57,17 @@ def download():
 
         # Файлын бүрэн зам, устгал төлөвлөх
         filepath = os.path.join(DOWNLOAD_FOLDER, filename)
-        schedule_file_deletion(filepath, delay=60)  # 5 минут = 300 секунд
+        schedule_file_deletion(filepath, delay=300)  # 5 минут = 300 секунд
 
         # Татах линк үүсгэх
         domain = "https://laravel1-production-5b85.up.railway.app"
-        file_url = f"{filename}"
+        file_url = f"{domain}/files/{filename}"
 
         return jsonify({
             "success": True,
             "title": title,
             "file": file_url,
-            "message": "Downloaded successfully! (auto-deletes in 1 min)"
+            "message": "Downloaded successfully! (auto-deletes in 5 min)"
         })
 
     except subprocess.CalledProcessError as e:
@@ -80,13 +80,9 @@ def serve_file(filename):
 
 @app.route("/")
 def home():
-    return "✅ spotDL backend with 1-min auto-delete is running! "
+    return "✅ spotDL backend with 5-min auto-delete is running!"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
-
-
-
-
 
 
