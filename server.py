@@ -29,6 +29,7 @@ def schedule_file_deletion(filepath, delay=300):
 def download():
     data = request.get_json()
     url = data.get("url")
+    url = url.replace("https://open.spotify.com/intl-mn/", "https://open.spotify.com/").split("?")[0]
     if not url:
         return jsonify({"success": False, "error": "No URL provided"}), 400
 
@@ -89,7 +90,7 @@ def download():
             {
                 "success": True,
                 "title": title,
-                "file": file_url,
+                "file": filename,
                 "message": "Downloaded successfully! (auto-deletes in 5 min)",
             }
         )
@@ -119,3 +120,4 @@ def home():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
