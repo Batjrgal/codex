@@ -50,13 +50,12 @@ def download():
         title = title_match.group(1) if title_match else "Unknown Track"
 
         filename = None
-        for file in os.listdir(DOWNLOAD_FOLDER):
-            if file.endswith(".mp3"):
-                filepath = os.path.join(DOWNLOAD_FOLDER, file)
-                if not filename or os.path.getmtime(filepath) > os.path.getmtime(
-                    os.path.join(DOWNLOAD_FOLDER, filename)
-                ):
-                    filename = file
+        for root, _, files in os.walk(DOWNLOAD_FOLDER):
+            for file in files:
+                if file.endswith(".mp3"):
+                    filepath = os.path.join(root, file)
+                    if not filename or os.path.getmtime(filepath) > os.path.getmtime(os.path.join(DOWNLOAD_FOLDER, filename)):
+                        filename = os.path.relpath(filepath, DOWNLOAD_FOLDER)
 
         if not filename:
             return jsonify({"success": False, "error": "File not found."})
@@ -93,5 +92,6 @@ def home():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
 
 
