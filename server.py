@@ -62,6 +62,7 @@ def download():
             return jsonify({"success": False, "error": "File not found."})
 
         filepath = os.path.join(DOWNLOAD_FOLDER, filename)
+        print("Saved file path:", filepath)
         schedule_file_deletion(filepath, delay=60)
 
         return jsonify(
@@ -92,4 +93,5 @@ def home():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
+
 
